@@ -57,10 +57,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
         SELECT
           c.id,
           c.date,
-          CASE
-            WHEN c.is_delete IS TRUE THEN '**komentar telah dihapus**'
-            ELSE content
-          END AS content,
+          c.is_delete,
           u.username
         FROM comments c
         JOIN users u ON u.id = c.owner
