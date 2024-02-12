@@ -117,6 +117,7 @@ describe('ThreadRepositoryPostgres', () => {
 
       // Assert
       expect(thread).toHaveProperty('id');
+      expect(thread.id).toEqual('thread-123');
     });
 
     it('should return not found if there is no thread', async () => {
