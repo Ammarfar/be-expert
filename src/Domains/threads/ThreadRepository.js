@@ -2,7 +2,7 @@ class ThreadRepository {
   async addThread(newThread) {
     throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
-  async getById(id) {
+  async verifyExistenceById(id) {
     throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
   async getWithCommentsById(threadId) {

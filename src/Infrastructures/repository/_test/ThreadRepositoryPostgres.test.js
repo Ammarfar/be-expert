@@ -75,7 +75,7 @@ describe('ThreadRepositoryPostgres', () => {
     });
   });
 
-  describe('getById function', () => {
+  describe('verifyExistenceById function', () => {
     it('should return existing thread', async () => {
       // Arrange
       const newThread = new NewThread({
@@ -87,11 +87,8 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
 
       await threadRepositoryPostgres.addThread(newThread);
-      // Action
-      const thread = await threadRepositoryPostgres.getById('thread-123');
-
-      // Assert
-      expect(thread).toHaveProperty('id');
+      // Action & Assert
+      await expect(threadRepositoryPostgres.verifyExistenceById('thread-123')).resolves.not.toThrowError(NotFoundError);
     });
 
     it('should return not found if there is no thread', async () => {
@@ -100,7 +97,7 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.getById('asdasd')).rejects.toThrowError(NotFoundError);
+      await expect(threadRepositoryPostgres.verifyExistenceById('asdasd')).rejects.toThrowError(NotFoundError);
     });
   });
 
