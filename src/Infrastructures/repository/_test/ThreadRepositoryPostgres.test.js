@@ -101,4 +101,29 @@ describe('ThreadRepositoryPostgres', () => {
     });
   });
 
+  describe('getById function', () => {
+    it('should return existing thread', async () => {
+      // Arrange
+      const newThread = new NewThread({
+        title: 'title',
+        body: 'body',
+        owner,
+      });
+      const fakeIdGenerator = () => '123'; // stub!
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+
+      await threadRepositoryPostgres.addThread(newThread);
+      // Action & Assert
+      await expect(threadRepositoryPostgres.getById('thread-123')).resolves.not.toThrowError(NotFoundError);
+    });
+
+    it('should return not found if there is no thread', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123'; // stub!
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action & Assert
+      await expect(threadRepositoryPostgres.getById('asdasd')).rejects.toThrowError(NotFoundError);
+    });
+  });
 });

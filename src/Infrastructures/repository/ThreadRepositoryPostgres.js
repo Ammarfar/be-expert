@@ -15,7 +15,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const date = new Date();
 
     const query = {
-      text: 'INSERT INTO threads VALUES($1, $2, $3, $4, $5) RETURNING id, body, title, owner',
+      text: "INSERT INTO threads VALUES($1, $2, $3, $4, $5) RETURNING id, body, title, owner",
       values: [id, title, body, owner, date],
     };
 
@@ -26,18 +26,18 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
   async verifyExistenceById(id) {
     const query = {
-      text: 'SELECT id FROM threads WHERE id = $1',
+      text: "SELECT id FROM threads WHERE id = $1",
       values: [id],
     };
 
     const result = await this._pool.query(query);
 
     if (result.rows.length === 0) {
-      throw new NotFoundError('thread tidak ditemukan');
+      throw new NotFoundError("thread tidak ditemukan");
     }
   }
 
-  async getWithCommentsById(threadId) {
+  async getById(threadId) {
     const query = {
       text: `
         SELECT t.id, t.title, t.body, t.date, u.username FROM threads t
@@ -45,32 +45,13 @@ class ThreadRepositoryPostgres extends ThreadRepository {
         WHERE t.id = $1`,
       values: [threadId],
     };
-
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new NotFoundError('thread tidak ditemukan');
+      throw new NotFoundError("thread tidak ditemukan");
     }
 
-    const comments = {
-      text: `
-        SELECT
-          c.id,
-          c.date,
-          c.is_delete,
-          u.username
-        FROM comments c
-        JOIN users u ON u.id = c.owner
-        WHERE c.thread_id = $1
-        ORDER BY c.date ASC`,
-      values: [threadId],
-    }
-    const commentResult = await this._pool.query(comments);
-
-    const thread = result.rows[0]
-    thread.comments = commentResult.rows;
-
-    return thread;
+    return result.rows[0];
   }
 }
 

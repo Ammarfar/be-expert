@@ -173,4 +173,26 @@ describe("CommentRepositoryPostgres", () => {
       ).rejects.toThrowError(NotFoundError);
     });
   });
+
+  describe("getByThreadId function", () => {
+    it("should get the comments", async () => {
+      // Arrange
+      const newComment = new NewComment({
+        content: "content",
+        thread_id,
+        owner,
+      });
+      const fakeIdGenerator = () => "123"; // stub!
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(
+        pool,
+        fakeIdGenerator
+      );
+      await commentRepositoryPostgres.addComment(newComment);
+
+      // Action & assert
+      await expect(
+        commentRepositoryPostgres.getByThreadId('thread-123')
+      ).resolves.not.toThrowError(Error);
+    });
+  });
 });

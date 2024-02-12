@@ -16,4 +16,12 @@ describe('CommentRepository interface', () => {
     // Action and Assert
     await expect(commentRepository.destroyById({})).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   });
+
+  it('should throw error when invoke abstract behavior', async () => {
+    // Arrange
+    const commentRepository = new CommentRepository();
+
+    // Action and Assert
+    await expect(commentRepository.getByThreadId('thread-123')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  });
 });

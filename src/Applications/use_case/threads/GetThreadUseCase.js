@@ -1,15 +1,18 @@
 class GetThreadUseCase {
   constructor({
     threadRepository,
+    commentRepository,
   }) {
     this.threadRepository = threadRepository;
+    this.commentRepository = commentRepository;
   }
 
   async execute(threadId) {
-    const data = await this.threadRepository.getWithCommentsById(threadId);
-    data.thread.comments = this.mapDeletedComment(data.thread.comments);
+    const thread = await this.threadRepository.getById(threadId);
+    const comments = await this.commentRepository.getByThreadId(threadId);
+    thread.comments = this.mapDeletedComment(comments);
 
-    return data;
+    return thread;
   }
 
   mapDeletedComment(data) {
