@@ -97,6 +97,7 @@ describe("/threads endpoint", () => {
       expect(response.statusCode).toEqual(201);
       expect(responseJson.status).toEqual("success");
       expect(responseJson.data.addedComment).toBeDefined();
+      expect(responseJson.data.addedComment).toHaveProperty('content');
     });
 
     it("should response 200 and delete comment", async () => {

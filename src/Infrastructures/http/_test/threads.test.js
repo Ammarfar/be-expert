@@ -85,6 +85,7 @@ describe("/threads endpoint", () => {
       expect(response.statusCode).toEqual(201);
       expect(responseJson.status).toEqual("success");
       expect(responseJson.data.addedThread).toBeDefined();
+      expect(responseJson.data.addedThread).toHaveProperty('title');
     });
 
     it("should response 400 when request payload not contain needed property", async () => {
@@ -155,6 +156,7 @@ describe("/threads endpoint", () => {
       expect(response.statusCode).toEqual(200);
       expect(responseJson.status).toEqual("success");
       expect(responseJson.data.thread).toBeDefined();
+      expect(responseJson.data.thread).toHaveProperty('id');
       expect(responseJson.data.thread.comments).toHaveLength(1);
     });
   });
