@@ -25,30 +25,27 @@ class CommentRepositoryPostgres extends CommentRepository {
     return new AddedComment({ ...result.rows[0] });
   }
 
-  async destroyById({ commentId, userId }) {
-    const queryCheck = {
-      text: "SELECT * FROM comments WHERE id = $1",
-      values: [commentId],
-    };
-
-    const resultCheck = await this._pool.query(queryCheck);
-    if (!resultCheck.rows.length) {
-      throw new NotFoundError("Gagal menghapus comment. Id tidak ditemukan");
-    }
-
-    const { owner } = resultCheck.rows[0];
-    if (owner !== userId) {
-      throw new AuthorizationError(
-        "Gagal menghapus comment. Comment tidak ditemukan"
-      );
-    }
-
+  async destroyById(commentId) {
     const query = {
       text: "UPDATE comments SET is_delete = true WHERE id = $1 RETURNING id",
       values: [commentId],
     };
 
     await this._pool.query(query);
+  }
+
+  async getById(commentId) {
+    const queryCheck = {
+      text: "SELECT * FROM comments WHERE id = $1",
+      values: [commentId],
+    };
+
+    const resultCheck = await this._pool.query(queryCheck);
+    if (!resultCheck.rowCount) {
+      throw new NotFoundError("comment tidak ditemukan");
+    }
+
+    return resultCheck.rows[0];
   }
 
   async getByThreadId(threadId) {

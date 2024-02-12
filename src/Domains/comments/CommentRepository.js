@@ -2,7 +2,10 @@ class CommentRepository {
   async addComment(newComment) {
     throw new Error("COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED");
   }
-  async destroyById({ commentId, userId }) {
+  async getById(commentId) {
+    throw new Error("COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED");
+  }
+  async destroyById(commentId) {
     throw new Error("COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED");
   }
   async getByThreadId(threadId) {

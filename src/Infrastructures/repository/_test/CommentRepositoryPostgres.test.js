@@ -77,6 +77,8 @@ describe("CommentRepositoryPostgres", () => {
         "comment-123"
       );
       expect(comment).toHaveLength(1);
+      expect(comment[0]).toHaveProperty("id");
+      expect(comment[0].id).toEqual("comment-123");
     });
 
     it("should return added comment correctly", async () => {
@@ -126,14 +128,17 @@ describe("CommentRepositoryPostgres", () => {
 
       // Action & assert
       await expect(
-        commentRepositoryPostgres.destroyById({
-          commentId: "comment-123",
-          userId: owner,
-        })
+        commentRepositoryPostgres.destroyById("comment-123")
       ).resolves.not.toThrowError(Error);
+      const comment = await CommentsTableTestHelper.findCommentsById(
+        "comment-123"
+      );
+      expect(comment[0].is_delete).toEqual(true);
     });
+  });
 
-    it("should return not authorized", async () => {
+  describe("getById function", () => {
+    it("should get the comment correctly", async () => {
       // Arrange
       const newComment = new NewComment({
         content: "content",
@@ -147,13 +152,12 @@ describe("CommentRepositoryPostgres", () => {
       );
       await commentRepositoryPostgres.addComment(newComment);
 
-      // Action & Assert
-      await expect(
-        commentRepositoryPostgres.destroyById({
-          commentId: "comment-123",
-          userId: "asd",
-        })
-      ).rejects.toThrowError(AuthorizationError);
+      // Action
+      const comment = await commentRepositoryPostgres.getById("comment-123");
+
+      // Assert
+      expect(comment).toHaveProperty('id');
+      expect(comment.id).toEqual("comment-123");
     });
 
     it("should return not found", async () => {
@@ -166,10 +170,7 @@ describe("CommentRepositoryPostgres", () => {
 
       // Action & Assert
       await expect(
-        commentRepositoryPostgres.destroyById({
-          commentId: "comment-123",
-          userId: "asd",
-        })
+        commentRepositoryPostgres.getById("comment-123")
       ).rejects.toThrowError(NotFoundError);
     });
   });
@@ -190,10 +191,33 @@ describe("CommentRepositoryPostgres", () => {
       await commentRepositoryPostgres.addComment(newComment);
 
       // Action
-      const comments = await commentRepositoryPostgres.getByThreadId('thread-123');
+      const comments = await commentRepositoryPostgres.getByThreadId(
+        "thread-123"
+      );
 
       // Assert
       expect(comments).toHaveLength(1);
+      comments.forEach((v) => {
+        expect(v).toHaveProperty("id");
+        expect(v).toHaveProperty("date");
+        expect(v).toHaveProperty("is_delete");
+        expect(v).toHaveProperty("content");
+        expect(v).toHaveProperty("username");
+      });
+    });
+
+    it("should return not found", async () => {
+      // Arrange
+      const fakeIdGenerator = () => "123"; // stub!
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(
+        pool,
+        fakeIdGenerator
+      );
+
+      // Action & Assert
+      await expect(
+        commentRepositoryPostgres.getByThreadId("asdasd")
+      ).rejects.toThrowError(NotFoundError);
     });
   });
 });
