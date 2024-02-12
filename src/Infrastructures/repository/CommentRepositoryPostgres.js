@@ -58,6 +58,7 @@ class CommentRepositoryPostgres extends CommentRepository {
           c.id,
           c.date,
           c.is_delete,
+          c.content,
           u.username
         FROM comments c
         JOIN users u ON u.id = c.owner
