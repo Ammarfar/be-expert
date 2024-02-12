@@ -189,10 +189,11 @@ describe("CommentRepositoryPostgres", () => {
       );
       await commentRepositoryPostgres.addComment(newComment);
 
-      // Action & assert
-      await expect(
-        commentRepositoryPostgres.getByThreadId('thread-123')
-      ).resolves.not.toThrowError(Error);
+      // Action
+      const comments = await commentRepositoryPostgres.getByThreadId('thread-123');
+
+      // Assert
+      expect(comments).toHaveLength(1);
     });
   });
 });
