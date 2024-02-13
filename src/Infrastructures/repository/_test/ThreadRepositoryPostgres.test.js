@@ -43,22 +43,6 @@ describe('ThreadRepositoryPostgres', () => {
       });
       const fakeIdGenerator = () => '123'; // stub!
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
-      await threadRepositoryPostgres.addThread(newThread);
-
-      // Action & Assert
-      const thread = await ThreadsTableTestHelper.findThreadsById('thread-123');
-      expect(thread).toHaveLength(1);
-    });
-
-    it('should return added thread correctly', async () => {
-      // Arrange
-      const newThread = new NewThread({
-        title: 'title',
-        body: 'body',
-        owner,
-      });
-      const fakeIdGenerator = () => '123'; // stub!
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
 
       // Action
       const addedThread = await threadRepositoryPostgres.addThread(newThread);
@@ -118,6 +102,13 @@ describe('ThreadRepositoryPostgres', () => {
       // Assert
       expect(thread).toHaveProperty('id');
       expect(thread.id).toEqual('thread-123');
+      expect(thread).toStrictEqual({
+        id: 'thread-123',
+        title: newThread.title,
+        body: newThread.body,
+        date: thread.date,
+        username: 'dicoding',
+      })
     });
 
     it('should return not found if there is no thread', async () => {

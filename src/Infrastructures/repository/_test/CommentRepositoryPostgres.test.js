@@ -70,44 +70,15 @@ describe("CommentRepositoryPostgres", () => {
       );
 
       // Action
-      await commentRepositoryPostgres.addComment(newComment);
+      const addedComment = await commentRepositoryPostgres.addComment(newComment);
 
       // Assert
-      const comment = await CommentsTableTestHelper.findCommentsById(
-        "comment-123"
-      );
-      expect(comment).toHaveLength(1);
-      expect(comment[0]).toHaveProperty("id");
-      expect(comment[0].id).toEqual("comment-123");
-    });
-
-    it("should return added comment correctly", async () => {
-      // Arrange
-      const newComment = new NewComment({
+      expect(addedComment).toStrictEqual(new AddedComment({
+        id: "comment-123",
         content: "content",
         thread_id,
         owner,
-      });
-      const fakeIdGenerator = () => "123"; // stub!
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(
-        pool,
-        fakeIdGenerator
-      );
-
-      // Action
-      const addedComment = await commentRepositoryPostgres.addComment(
-        newComment
-      );
-
-      // Assert
-      expect(addedComment).toStrictEqual(
-        new AddedComment({
-          id: "comment-123",
-          content: "content",
-          thread_id,
-          owner,
-        })
-      );
+      }))
     });
   });
 
@@ -158,6 +129,14 @@ describe("CommentRepositoryPostgres", () => {
       // Assert
       expect(comment).toHaveProperty('id');
       expect(comment.id).toEqual("comment-123");
+      expect(comment).toStrictEqual({
+        id: 'comment-123',
+        content: newComment.content,
+        thread_id,
+        owner,
+        date: comment.date,
+        is_delete: false,
+      })
     });
 
     it("should return not found", async () => {
@@ -240,6 +219,17 @@ describe("CommentRepositoryPostgres", () => {
         expect(v).toHaveProperty("is_delete");
         expect(v).toHaveProperty("content");
         expect(v).toHaveProperty("username");
+
+        if (v.id === 'thread-123') {
+          expect(v).toStrictEqual({
+            id: 'thread-123',
+            content: newComment.content,
+            thread_id,
+            owner,
+            date: v.date,
+            is_delete: false,
+          })
+        }
       });
     });
 
