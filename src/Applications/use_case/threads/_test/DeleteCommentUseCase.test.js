@@ -23,12 +23,9 @@ describe("DeleteCommentUseCase", () => {
     mockThreadRepository.verifyExistenceById = jest
       .fn()
       .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.getById = jest
+    mockCommentRepository.getOwnerById = jest
       .fn()
-      .mockImplementation(() => Promise.resolve({
-        id: "comment-123",
-        owner: "user-123",
-      }));
+      .mockImplementation(() => Promise.resolve("user-123"));
     mockCommentRepository.destroyById = jest
       .fn()
       .mockImplementation(() => Promise.resolve());
@@ -40,10 +37,18 @@ describe("DeleteCommentUseCase", () => {
     });
 
     // Action & Assert
-    await expect(getCommentUseCase.execute(useCasePayload)).resolves.not.toThrowError(Error);
-    expect(mockThreadRepository.verifyExistenceById).toBeCalledWith(useCasePayload.threadId);
-    expect(mockCommentRepository.getById).toBeCalledWith(useCasePayload.commentId);
-    expect(mockCommentRepository.destroyById).toBeCalledWith(useCasePayload.commentId);
+    await expect(
+      getCommentUseCase.execute(useCasePayload)
+    ).resolves.not.toThrowError(Error);
+    expect(mockThreadRepository.verifyExistenceById).toBeCalledWith(
+      useCasePayload.threadId
+    );
+    expect(mockCommentRepository.getOwnerById).toBeCalledWith(
+      useCasePayload.commentId
+    );
+    expect(mockCommentRepository.destroyById).toBeCalledWith(
+      useCasePayload.commentId
+    );
   });
 
   it("should return unauthorized", async () => {
@@ -51,7 +56,7 @@ describe("DeleteCommentUseCase", () => {
     const useCasePayload = {
       threadId: "thread-123",
       commentId: "comment-123",
-      userId: "user-122",
+      userId: "user-123",
     };
 
     /** creating dependency of use case */
@@ -62,12 +67,9 @@ describe("DeleteCommentUseCase", () => {
     mockThreadRepository.verifyExistenceById = jest
       .fn()
       .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.getById = jest
+    mockCommentRepository.getOwnerById = jest
       .fn()
-      .mockImplementation(() => Promise.resolve({
-        id: "comment-123",
-        owner: "user-123",
-      }));
+      .mockImplementation(() => Promise.resolve("asdasd"));
     mockCommentRepository.destroyById = jest
       .fn()
       .mockImplementation(() => Promise.resolve());
@@ -79,6 +81,8 @@ describe("DeleteCommentUseCase", () => {
     });
 
     // Action & Assert
-    await expect(getCommentUseCase.execute(useCasePayload)).rejects.toThrowError(AuthorizationError);
+    await expect(
+      getCommentUseCase.execute(useCasePayload)
+    ).rejects.toThrowError("UNAUTHORIZED");
   });
 });
