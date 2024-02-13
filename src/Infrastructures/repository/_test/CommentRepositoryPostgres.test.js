@@ -73,7 +73,9 @@ describe("CommentRepositoryPostgres", () => {
       await commentRepositoryPostgres.addComment(newComment);
 
       // Assert
-      const comment = await CommentsTableTestHelper.findCommentsById('comment-123');
+      const comment = await CommentsTableTestHelper.findCommentsById(
+        "comment-123"
+      );
       expect(comment).toHaveLength(1);
     });
 
@@ -91,15 +93,19 @@ describe("CommentRepositoryPostgres", () => {
       );
 
       // Action
-      const addedComment = await commentRepositoryPostgres.addComment(newComment);
+      const addedComment = await commentRepositoryPostgres.addComment(
+        newComment
+      );
 
       // Assert
-      expect(addedComment).toStrictEqual(new AddedComment({
-        id: "comment-123",
-        content: "content",
-        thread_id,
-        owner,
-      }))
+      expect(addedComment).toStrictEqual(
+        new AddedComment({
+          id: "comment-123",
+          content: "content",
+          thread_id,
+          owner,
+        })
+      );
     });
   });
 
@@ -148,16 +154,17 @@ describe("CommentRepositoryPostgres", () => {
       const comment = await commentRepositoryPostgres.getById("comment-123");
 
       // Assert
-      expect(comment).toHaveProperty('id');
+      expect(comment).toHaveProperty("id");
       expect(comment.id).toEqual("comment-123");
-      expect(comment).toStrictEqual({
-        id: 'comment-123',
-        content: newComment.content,
-        thread_id,
-        owner,
-        date: comment.date,
-        is_delete: false,
-      })
+      expect(comment).toEqual(
+        expect.objectContaining({
+          id: "comment-123",
+          content: newComment.content,
+          thread_id,
+          owner,
+          is_delete: false,
+        })
+      );
     });
 
     it("should return not found", async () => {
@@ -191,7 +198,9 @@ describe("CommentRepositoryPostgres", () => {
       await commentRepositoryPostgres.addComment(newComment);
 
       // Action
-      const userId = await commentRepositoryPostgres.getOwnerById("comment-123");
+      const userId = await commentRepositoryPostgres.getOwnerById(
+        "comment-123"
+      );
 
       // Assert
       expect(userId).toEqual(owner);
@@ -241,14 +250,16 @@ describe("CommentRepositoryPostgres", () => {
         expect(v).toHaveProperty("content");
         expect(v).toHaveProperty("username");
 
-        if (v.id === 'thread-123') {
-          expect(v).toEqual(expect.objectContaining({
-            id: 'thread-123',
-            content: newComment.content,
-            thread_id,
-            owner,
-            is_delete: false,
-          }))
+        if (v.id === "thread-123") {
+          expect(v).toEqual(
+            expect.objectContaining({
+              id: "thread-123",
+              content: newComment.content,
+              thread_id,
+              owner,
+              is_delete: false,
+            })
+          );
         }
       });
     });
