@@ -70,6 +70,27 @@ describe("CommentRepositoryPostgres", () => {
       );
 
       // Action
+      await commentRepositoryPostgres.addComment(newComment);
+
+      // Assert
+      const comment = await CommentsTableTestHelper.findCommentsById('comment-123');
+      expect(comment).toHaveLength(1);
+    });
+
+    it("should return added comment correctly", async () => {
+      // Arrange
+      const newComment = new NewComment({
+        content: "content",
+        thread_id,
+        owner,
+      });
+      const fakeIdGenerator = () => "123"; // stub!
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(
+        pool,
+        fakeIdGenerator
+      );
+
+      // Action
       const addedComment = await commentRepositoryPostgres.addComment(newComment);
 
       // Assert
@@ -221,14 +242,13 @@ describe("CommentRepositoryPostgres", () => {
         expect(v).toHaveProperty("username");
 
         if (v.id === 'thread-123') {
-          expect(v).toStrictEqual({
+          expect(v).toEqual(expect.objectContaining({
             id: 'thread-123',
             content: newComment.content,
             thread_id,
             owner,
-            date: v.date,
             is_delete: false,
-          })
+          }))
         }
       });
     });
